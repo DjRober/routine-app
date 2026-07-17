@@ -3,23 +3,24 @@
 Uso:  python tools/generate_template.py
 Produce: docs/Plantilla_Rutina.xlsx
 
-Las hojas y los encabezados coinciden con lo que reconoce el importador
-(TemplateImporter.kt). Puedes reordenar columnas o renombrar cerca del original;
-el importador identifica cada campo por palabras clave.
+Hojas: Horario, Tareas, Ejercicios, Hitos. Los encabezados coinciden con lo que
+reconoce el importador (TemplateImporter.kt), que identifica cada campo por
+palabras clave, así que puedes reordenar o renombrar cerca del original.
 """
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.worksheet.datavalidation import DataValidation
 import os
 
-HEADER_FILL = PatternFill("solid", fgColor="1F6FEB")
+HEADER_FILL = PatternFill("solid", fgColor="4A7A5A")
 HEADER_FONT = Font(bold=True, color="FFFFFF")
 THIN = Side(style="thin", color="D0D7DE")
 BORDER = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 
 DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
-CATEGORIAS = ["Estudio", "Ejercicio", "Personal", "Otro"]
-TIPOS = ["Calistenia", "Proyecto"]
+CONTEXTOS_H = ["Estudio", "Calistenia", "General"]
+CONTEXTOS = ["Estudio", "Calistenia"]
+ESTADOS = ["Hecho", "Actual", "Pendiente"]
 
 
 def style_headers(ws, ncols):
@@ -38,82 +39,86 @@ def autosize(ws, widths):
         ws.column_dimensions[chr(64 + i)].width = w
 
 
-def add_list_validation(ws, options, col_letter, last_row=200):
+def add_list(ws, options, col_letter, last_row=100):
     dv = DataValidation(type="list", formula1='"%s"' % ",".join(options), allow_blank=True)
     ws.add_data_validation(dv)
     dv.add(f"{col_letter}2:{col_letter}{last_row}")
 
 
+def text_col(ws, col, last=60):
+    for row in range(2, last):
+        ws.cell(row=row, column=col).number_format = "@"
+
+
 wb = Workbook()
 
-# --- Hoja 1: Rutina diaria ---
+# --- Hoja 1: Horario (timeline del día) ---
 ws = wb.active
-ws.title = "Rutina"
-ws.append(["Día", "Inicio", "Fin", "Actividad", "Categoría", "Notas"])
-ejemplos_rutina = [
-    ["Lunes", "07:00", "08:00", "Estudio de arquitectura", "Estudio", "Bloque profundo"],
-    ["Lunes", "18:00", "19:00", "Calistenia - Empuje", "Ejercicio", ""],
-    ["Martes", "07:00", "08:00", "Proyecto personal", "Estudio", ""],
-    ["Miércoles", "18:00", "19:00", "Calistenia - Tracción", "Ejercicio", ""],
-]
-for r in ejemplos_rutina:
+ws.title = "Horario"
+ws.append(["Día", "Inicio", "Fin", "Actividad", "Contexto", "Notas"])
+for r in [
+    ["Jueves", "05:30", "", "Despertar", "General", ""],
+    ["Jueves", "06:00", "", "Desayuno", "General", ""],
+    ["Jueves", "07:00", "14:00", "Clases", "Estudio", "Foco de la mañana"],
+    ["Jueves", "14:30", "", "Comida — fuerte", "General", ""],
+    ["Jueves", "16:30", "17:30", "Entrenamiento", "Calistenia", ""],
+    ["Jueves", "21:30", "", "Dormir", "General", ""],
+    ["Lunes", "07:00", "14:00", "Clases", "Estudio", ""],
+    ["Lunes", "18:00", "19:00", "Entrenamiento", "Calistenia", ""],
+]:
     ws.append(r)
 style_headers(ws, 6)
-autosize(ws, [12, 10, 10, 28, 14, 24])
-add_list_validation(ws, DIAS, "A")
-add_list_validation(ws, CATEGORIAS, "E")
+autosize(ws, [12, 9, 9, 26, 13, 22])
+add_list(ws, DIAS, "A")
+add_list(ws, CONTEXTOS_H, "E")
 
-# --- Hoja 2: Ejercicios de calistenia ---
+# --- Hoja 2: Tareas (pestaña Hoy de Estudio) ---
+ws = wb.create_sheet("Tareas")
+ws.append(["Contexto", "Día", "Tarea", "Estimación", "Orden"])
+for r in [
+    ["Estudio", "Jueves", "Wireframes pantallas", "2h", 1],
+    ["Estudio", "Jueves", "Revisión con mentor", "45m", 2],
+    ["Estudio", "Jueves", "Ajustar propuesta", "1h", 3],
+    ["Estudio", "Lunes", "Leer capítulo 3", "1h", 1],
+]:
+    ws.append(r)
+style_headers(ws, 5)
+autosize(ws, [13, 12, 28, 12, 8])
+add_list(ws, CONTEXTOS, "A")
+add_list(ws, DIAS, "B")
+
+# --- Hoja 3: Ejercicios (pestaña Hoy de Calistenia) ---
 ws = wb.create_sheet("Ejercicios")
-ws.append(["Día", "Hora", "Ejercicio", "Series", "Reps", "Meta", "Notas"])
-ejemplos_ex = [
-    ["Lunes", "18:00", "Flexiones", 4, "12-15", "Flexiones seguidas", ""],
-    ["Lunes", "18:20", "Fondos en paralelas", 4, "8-10", "", ""],
-    ["Miércoles", "18:00", "Dominadas", 5, "6-8", "Dominadas seguidas", ""],
-    ["Miércoles", "18:25", "Remo australiano", 4, "12", "", ""],
-    ["Viernes", "18:00", "Plancha (hold)", 3, "30 seg", "Plancha 60s", ""],
-]
-for r in ejemplos_ex:
-    ws.append(r)
-style_headers(ws, 7)
-autosize(ws, [12, 8, 24, 8, 12, 22, 20])
-add_list_validation(ws, DIAS, "A")
-
-# --- Hoja 3: Metas ---
-ws = wb.create_sheet("Metas")
-ws.append(["Meta", "Tipo", "Actual", "Objetivo", "Unidad", "Fecha límite"])
-ejemplos_metas = [
-    ["Dominadas seguidas", "Calistenia", 6, 15, "reps", "2026-12-31"],
-    ["Flexiones seguidas", "Calistenia", 20, 50, "reps", "2026-12-31"],
-    ["Plancha 60s", "Calistenia", 30, 60, "seg", "2026-10-31"],
-    ["Avance del proyecto", "Proyecto", 35, 100, "%", "2026-09-30"],
-    ["Horas de estudio (mes)", "Proyecto", 12, 40, "horas", ""],
-]
-for r in ejemplos_metas:
+ws.append(["Día", "Hora", "Ejercicio", "Series", "Reps", "Notas"])
+for r in [
+    ["Jueves", "16:30", "Flexiones", 4, "12-15", ""],
+    ["Jueves", "16:45", "Fondos en paralelas", 4, "8-10", ""],
+    ["Jueves", "17:05", "Dominadas", 5, "6-8", ""],
+    ["Lunes", "18:00", "Sentadillas", 4, "20", ""],
+    ["Lunes", "18:20", "Plancha (hold)", 3, "30 seg", ""],
+]:
     ws.append(r)
 style_headers(ws, 6)
-autosize(ws, [26, 14, 10, 10, 10, 14])
-add_list_validation(ws, TIPOS, "B")
-# Fecha límite como texto ISO para lectura inequívoca.
-for row in range(2, 60):
-    ws.cell(row=row, column=6).number_format = "@"
+autosize(ws, [12, 8, 24, 8, 12, 20])
+add_list(ws, DIAS, "A")
 
-# --- Hoja 4: Progreso ---
-ws = wb.create_sheet("Progreso")
-ws.append(["Meta", "Fecha", "Valor", "Nota"])
-ejemplos_prog = [
-    ["Dominadas seguidas", "2026-06-01", 4, "Inicio"],
-    ["Dominadas seguidas", "2026-06-15", 5, ""],
-    ["Dominadas seguidas", "2026-07-01", 6, ""],
-    ["Avance del proyecto", "2026-06-01", 20, ""],
-    ["Avance del proyecto", "2026-07-01", 35, "Módulo de datos listo"],
-]
-for r in ejemplos_prog:
+# --- Hoja 4: Hitos (pestaña Progreso) ---
+ws = wb.create_sheet("Hitos")
+ws.append(["Contexto", "Proyecto", "Hito", "Estado", "Orden"])
+for r in [
+    ["Estudio", "Sprint Diseño", "Investigación inicial", "Hecho", 1],
+    ["Estudio", "Sprint Diseño", "Marco teórico", "Hecho", 2],
+    ["Estudio", "Sprint Diseño", "Prototipo funcional", "Actual", 3],
+    ["Estudio", "Sprint Diseño", "Entrega final", "Pendiente", 4],
+    ["Calistenia", "Dominadas", "5 dominadas seguidas", "Hecho", 1],
+    ["Calistenia", "Dominadas", "8 dominadas seguidas", "Actual", 2],
+    ["Calistenia", "Dominadas", "12 dominadas seguidas", "Pendiente", 3],
+]:
     ws.append(r)
-style_headers(ws, 4)
-autosize(ws, [26, 14, 10, 28])
-for row in range(2, 60):
-    ws.cell(row=row, column=2).number_format = "@"
+style_headers(ws, 5)
+autosize(ws, [13, 20, 26, 12, 8])
+add_list(ws, CONTEXTOS, "A")
+add_list(ws, ESTADOS, "D")
 
 out_dir = os.path.join(os.path.dirname(__file__), "..", "docs")
 os.makedirs(out_dir, exist_ok=True)

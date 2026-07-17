@@ -1,36 +1,42 @@
 # Routine App
 
-App Android (Kotlin + Jetpack Compose) para centralizar en un solo lugar:
+App Android (Kotlin + Jetpack Compose) para centralizar en un solo lugar tu **estudio/proyectos**
+y tu **calistenia**. Se organiza en **dos contextos** (Estudio ↔ Calistenia) con un switcher tipo
+píldora, un selector de día y tres pestañas:
 
-- 🗓️ **Rutina diaria** — bloques de estudio/proyecto, ejercicio y personales por día y horario.
-- 💪 **Rutina de calistenia** — ejercicios por día de la semana, con series y repeticiones.
-- 🎯 **Progreso y metas** — metas de calistenia y de proyecto/estudio, con barra de avance y gráfica de evolución.
+- **Hoy** — foco del día: lista de tareas (Estudio) o de ejercicios (Calistenia), con check.
+- **Horario** — línea de tiempo del día; resalta el bloque "activo" según el contexto.
+- **Progreso** — checklist de fases/hitos por proyecto (hecho · actual/"Meta" · pendiente).
+
+Incluye **4 temas** (Dark verde/óxido, Matrix, Stealth, Cute) seleccionables desde `◐ Tema`.
 
 Los datos se guardan **localmente en el teléfono** (Room) — sin servidor ni conexión. Se actualizan de dos formas:
 
-1. **Manualmente**, desde la pestaña *Datos* (agregar/editar/eliminar bloques, ejercicios y metas; registrar avances).
+1. **Manualmente** — toca cualquier fila para editarla, usa los botones **＋ Agregar**, marca
+   tareas/ejercicios y cambia el estado de los hitos. Se guarda automáticamente.
 2. **Importando una plantilla de Excel** (`.xlsx`) — ver [docs/PLANTILLA.md](docs/PLANTILLA.md).
 
 ## Arquitectura
 
-- **UI:** Jetpack Compose + Material 3, navegación con barra inferior (Hoy / Semana / Metas / Datos).
-- **Estado:** MVVM — `RoutineViewModel` expone `StateFlow`s.
+- **UI:** Jetpack Compose + Material 3. Una sola pantalla con switcher de contexto + pestañas
+  (sin barra inferior). Paleta y tipografía por tema vía `LocalAppColors` + `RoutineappTheme`.
+- **Estado:** MVVM — `RoutineViewModel` expone `StateFlow`s; tema persistido en `SharedPreferences`.
 - **Persistencia:** Room (`AppDatabase`, DAOs, repositorio).
 - **Importación:** lector de `.xlsx` propio y ligero (`XlsxReader`, solo `ZipInputStream` + `XmlPullParser`, sin dependencias pesadas) + `TemplateImporter` que mapea hojas/columnas a entidades.
-- **Gráficas:** dibujadas con `Canvas` (sin librerías externas).
 
 ```
 app/src/main/java/com/example/routine_app/
 ├── data/
-│   ├── model/        Entidades y enums (RoutineBlock, Exercise, Goal, ProgressEntry)
+│   ├── model/        Entidades y enums (ScheduleItem, Task, Exercise, Milestone; Section, ScheduleTag…)
 │   ├── db/           Room: AppDatabase, DAOs, Converters
 │   ├── importer/     XlsxReader + TemplateImporter
 │   └── RoutineRepository.kt
 └── ui/
-    ├── RoutineApp.kt       Navegación + barra inferior
+    ├── RoutineApp.kt       Switcher + toolbar + selector de día + pestañas
     ├── RoutineViewModel.kt
-    ├── components/         LineChart, barras de progreso, etc.
-    └── screens/            Today, Week, Goals, Data (+ diálogos)
+    ├── theme/             AppTheme.kt (4 temas)
+    ├── components/         Widgets (switcher, day selector, tabs, tool buttons)
+    └── screens/            HoyTab, HorarioTab, ProgresoTab + Dialogs
 ```
 
 ## Compilar e instalar en el teléfono

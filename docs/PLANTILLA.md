@@ -1,7 +1,8 @@
 # Plantilla de Excel
 
 La plantilla [`Plantilla_Rutina.xlsx`](Plantilla_Rutina.xlsx) tiene **4 hojas**. Edítala en
-Excel (o Google Sheets / LibreOffice) y luego impórtala desde la pestaña **Datos** de la app.
+Excel (o Google Sheets / LibreOffice) y luego impórtala desde el botón **⬒ Importar Excel**
+de la app.
 
 > **Importante:** al importar, los datos actuales de la app se **reemplazan** por completo
 > con el contenido de la plantilla. Es la fuente de verdad; edita ahí y vuelve a importar.
@@ -9,56 +10,62 @@ Excel (o Google Sheets / LibreOffice) y luego impórtala desde la pestaña **Dat
 El importador es tolerante: reconoce cada hoja y cada columna por el **nombre aproximado**
 (en español), sin importar el orden de las columnas. Las filas incompletas se omiten.
 
-## Hoja `Rutina` — rutina diaria
+## Contextos
 
-| Columna    | Ejemplo                  | Notas |
-|------------|--------------------------|-------|
-| Día        | Lunes                    | Lunes…Domingo (también acepta "Lun", "L", "1") |
-| Inicio     | 07:00                    | Hora de inicio (opcional) |
-| Fin        | 08:00                    | Hora de fin (opcional) |
-| Actividad  | Estudio de arquitectura  | Obligatorio |
-| Categoría  | Estudio                  | Estudio · Ejercicio · Personal · Otro |
-| Notas      | Bloque profundo          | Opcional |
+La app se organiza en dos contextos: **Estudio** y **Calistenia**. Varias hojas tienen una
+columna **Contexto** para indicar a cuál pertenece cada fila.
 
-## Hoja `Ejercicios` — calistenia
+## Hoja `Horario` — línea de tiempo del día
 
-| Columna   | Ejemplo             | Notas |
-|-----------|---------------------|-------|
-| Día       | Lunes               | Obligatorio |
-| Hora      | 18:00               | Opcional |
-| Ejercicio | Flexiones           | Obligatorio |
-| Series    | 4                   | Número |
-| Reps      | 12-15               | Texto libre (ej: "8-12", "30 seg", "al fallo") |
-| Meta      | Flexiones seguidas  | Opcional: enlaza con una fila de la hoja **Metas** por su nombre |
-| Notas     |                     | Opcional |
+Se muestra en la pestaña **Horario**. El bloque cuyo *Contexto* coincide con el contexto
+activo se resalta como "foco activo".
 
-## Hoja `Metas`
+| Columna    | Ejemplo        | Notas |
+|------------|----------------|-------|
+| Día        | Jueves         | Lunes…Domingo (también "Jue", "J", "4") |
+| Inicio     | 07:00          | Hora de inicio |
+| Fin        | 14:00          | Hora de fin (opcional; vacío = evento puntual) |
+| Actividad  | Clases         | Obligatorio |
+| Contexto   | Estudio        | Estudio · Calistenia · General |
+| Notas      | Foco mañana    | Opcional |
 
-| Columna       | Ejemplo             | Notas |
-|---------------|---------------------|-------|
-| Meta          | Dominadas seguidas  | Obligatorio (este nombre se usa para enlazar) |
-| Tipo          | Calistenia          | Calistenia · Proyecto |
-| Actual        | 6                   | Valor actual |
-| Objetivo      | 15                  | Valor meta |
-| Unidad        | reps                | reps · seg · % · horas… |
-| Fecha límite  | 2026-12-31          | Formato `yyyy-MM-dd` (opcional) |
+## Hoja `Tareas` — pestaña Hoy (Estudio)
 
-## Hoja `Progreso` — evolución de cada meta
+| Columna    | Ejemplo              | Notas |
+|------------|----------------------|-------|
+| Contexto   | Estudio              | Estudio · Calistenia |
+| Día        | Jueves               | Obligatorio |
+| Tarea      | Wireframes pantallas | Obligatorio |
+| Estimación | 2h                   | Texto libre ("2h", "45m") |
+| Orden      | 1                    | Número para ordenar (opcional) |
 
-| Columna | Ejemplo             | Notas |
-|---------|---------------------|-------|
-| Meta    | Dominadas seguidas  | Debe coincidir con el nombre en la hoja **Metas** |
-| Fecha   | 2026-06-15          | Formato `yyyy-MM-dd` |
-| Valor   | 5                   | Número |
-| Nota    | Inicio              | Opcional |
+## Hoja `Ejercicios` — pestaña Hoy (Calistenia)
 
-Con dos o más registros de progreso de una meta, la app dibuja su **gráfica de evolución**
-(pestaña *Metas* → toca la meta para expandirla).
+| Columna   | Ejemplo    | Notas |
+|-----------|------------|-------|
+| Día       | Jueves     | Obligatorio |
+| Hora      | 16:30      | Opcional |
+| Ejercicio | Flexiones  | Obligatorio |
+| Series    | 4          | Número |
+| Reps      | 12-15      | Texto libre ("8-12", "30 seg") |
+| Notas     |            | Opcional |
+
+## Hoja `Hitos` — pestaña Progreso
+
+Cada proyecto (columna **Proyecto**) agrupa sus hitos como un checklist. El hito en estado
+*Actual* se marca como "Meta".
+
+| Columna   | Ejemplo               | Notas |
+|-----------|-----------------------|-------|
+| Contexto  | Estudio               | Estudio · Calistenia |
+| Proyecto  | Sprint Diseño         | Agrupador del checklist |
+| Hito      | Prototipo funcional   | Obligatorio |
+| Estado    | Actual                | Hecho · Actual · Pendiente |
+| Orden     | 3                     | Número para ordenar (opcional) |
 
 ## Consejos
 
-- Los nombres de meta se comparan **sin distinguir mayúsculas ni espacios de sobra**, pero
-  escríbelos igual en las hojas *Metas*, *Ejercicios* y *Progreso* para que se enlacen bien.
 - Puedes dejar hojas vacías (solo encabezados) si no las usas.
-- Las fechas pueden ir como texto `yyyy-MM-dd`, como `dd/mm/aaaa`, o con formato de fecha
-  real de Excel — el importador las normaliza.
+- En la app, todo se puede editar también a mano: toca cualquier fila para editarla, usa
+  los botones **＋ Agregar**, y en Progreso toca el cuadro de un hito para cambiar su estado
+  (pendiente → actual → hecho). Se guarda automáticamente.

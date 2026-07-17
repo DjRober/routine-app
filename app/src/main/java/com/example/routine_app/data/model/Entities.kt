@@ -1,63 +1,59 @@
 package com.example.routine_app.data.model
 
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 
-/** Bloque de la rutina diaria (estudio, ejercicio, personal…). */
-@Entity(tableName = "routine_blocks")
-data class RoutineBlock(
+/** Bloque del horario diario (timeline). Se muestra en la pestaña Horario. */
+@Entity(tableName = "schedule_items")
+data class ScheduleItem(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val title: String,
     val weekday: Weekday,
-    val startTime: String,          // "HH:mm"
-    val endTime: String,            // "HH:mm"
-    val category: BlockCategory = BlockCategory.OTRO,
+    val startTime: String,              // "HH:mm"
+    val endTime: String = "",           // "HH:mm" (vacío = evento puntual)
+    val title: String,
+    val tag: ScheduleTag = ScheduleTag.GENERAL,
     val notes: String = "",
 )
 
-/** Ejercicio de calistenia programado en un día/horario. */
-@Entity(
-    tableName = "exercises",
-    indices = [Index("goalId")],
+/** Tarea del día para un contexto (pestaña Hoy de Estudio). */
+@Entity(tableName = "tasks")
+data class Task(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val section: Section = Section.ESTUDIO,
+    val weekday: Weekday,
+    val orderIndex: Int = 0,
+    val title: String,
+    val estimate: String = "",          // "2h", "45m"…
+    val done: Boolean = false,
 )
+
+/** Ejercicio de calistenia programado (pestaña Hoy de Calistenia). */
+@Entity(tableName = "exercises")
 data class Exercise(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val name: String,
     val weekday: Weekday,
-    val time: String = "",          // "HH:mm" (opcional)
+    val time: String = "",              // "HH:mm" (opcional)
+    val name: String,
     val sets: Int = 0,
-    val reps: String = "",          // libre: "8-12", "30 seg", "al fallo"
-    val goalId: Long? = null,       // meta de calistenia vinculada (opcional)
+    val reps: String = "",              // "8-12", "30 seg"…
+    val done: Boolean = false,
     val notes: String = "",
-)
-
-/** Meta rastreable (calistenia o proyecto/estudio). */
-@Entity(tableName = "goals")
-data class Goal(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val title: String,
-    val type: GoalType = GoalType.CALISTENIA,
-    val targetValue: Double = 0.0,
-    val currentValue: Double = 0.0,
-    val unit: String = "",          // "reps", "seg", "%", "kg"…
-    val deadline: String? = null,   // ISO "yyyy-MM-dd" (opcional)
 ) {
-    /** Avance 0f..1f respecto al objetivo. */
-    val progressFraction: Float
-        get() = if (targetValue <= 0.0) 0f
-        else (currentValue / targetValue).coerceIn(0.0, 1.0).toFloat()
+    /** Detalle compacto "4 × 8-12". */
+    val detail: String
+        get() = buildString {
+            if (sets > 0) append("$sets")
+            if (reps.isNotBlank()) { if (isNotEmpty()) append(" × "); append(reps) }
+        }
 }
 
-/** Registro fechado de progreso de una meta (alimenta las gráficas). */
-@Entity(
-    tableName = "progress_entries",
-    indices = [Index("goalId")],
-)
-data class ProgressEntry(
+/** Hito/fase dentro de un proyecto o meta (pestaña Progreso). */
+@Entity(tableName = "milestones")
+data class Milestone(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val goalId: Long,
-    val date: String,               // ISO "yyyy-MM-dd"
-    val value: Double,
-    val note: String = "",
+    val section: Section = Section.ESTUDIO,
+    val track: String,                  // agrupador: "Sprint Diseño", "Dominadas"…
+    val orderIndex: Int = 0,
+    val title: String,
+    val status: MilestoneStatus = MilestoneStatus.PENDING,
 )

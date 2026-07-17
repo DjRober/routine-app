@@ -6,21 +6,21 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.routine_app.data.model.Exercise
-import com.example.routine_app.data.model.Goal
-import com.example.routine_app.data.model.ProgressEntry
-import com.example.routine_app.data.model.RoutineBlock
+import com.example.routine_app.data.model.Milestone
+import com.example.routine_app.data.model.ScheduleItem
+import com.example.routine_app.data.model.Task
 
 @Database(
-    entities = [RoutineBlock::class, Exercise::class, Goal::class, ProgressEntry::class],
-    version = 1,
+    entities = [ScheduleItem::class, Task::class, Exercise::class, Milestone::class],
+    version = 2,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun routineBlockDao(): RoutineBlockDao
+    abstract fun scheduleDao(): ScheduleDao
+    abstract fun taskDao(): TaskDao
     abstract fun exerciseDao(): ExerciseDao
-    abstract fun goalDao(): GoalDao
-    abstract fun progressEntryDao(): ProgressEntryDao
+    abstract fun milestoneDao(): MilestoneDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null

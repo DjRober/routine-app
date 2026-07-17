@@ -4,69 +4,46 @@ import android.content.Context
 import com.example.routine_app.data.db.AppDatabase
 import com.example.routine_app.data.importer.ImportedData
 import com.example.routine_app.data.model.Exercise
-import com.example.routine_app.data.model.Goal
-import com.example.routine_app.data.model.ProgressEntry
-import com.example.routine_app.data.model.RoutineBlock
-import com.example.routine_app.data.model.Weekday
+import com.example.routine_app.data.model.Milestone
+import com.example.routine_app.data.model.ScheduleItem
+import com.example.routine_app.data.model.Task
 import kotlinx.coroutines.flow.Flow
 
 /** Punto único de acceso a los datos (envuelve los DAOs de Room). */
 class RoutineRepository(context: Context) {
 
     private val db = AppDatabase.get(context)
-    private val blockDao = db.routineBlockDao()
+    private val scheduleDao = db.scheduleDao()
+    private val taskDao = db.taskDao()
     private val exerciseDao = db.exerciseDao()
-    private val goalDao = db.goalDao()
-    private val progressDao = db.progressEntryDao()
+    private val milestoneDao = db.milestoneDao()
 
-    // --- Observadores ---
-    val blocks: Flow<List<RoutineBlock>> = blockDao.observeAll()
+    val schedule: Flow<List<ScheduleItem>> = scheduleDao.observeAll()
+    val tasks: Flow<List<Task>> = taskDao.observeAll()
     val exercises: Flow<List<Exercise>> = exerciseDao.observeAll()
-    val goals: Flow<List<Goal>> = goalDao.observeAll()
-    val progress: Flow<List<ProgressEntry>> = progressDao.observeAll()
+    val milestones: Flow<List<Milestone>> = milestoneDao.observeAll()
 
-    fun blocksForDay(day: Weekday) = blockDao.observeForDay(day.name)
-    fun exercisesForDay(day: Weekday) = exerciseDao.observeForDay(day.name)
-    fun progressForGoal(goalId: Long) = progressDao.observeForGoal(goalId)
+    suspend fun saveSchedule(item: ScheduleItem) = scheduleDao.upsert(item)
+    suspend fun deleteSchedule(item: ScheduleItem) = scheduleDao.delete(item)
 
-    // --- Bloques de rutina ---
-    suspend fun saveBlock(block: RoutineBlock) = blockDao.upsert(block)
-    suspend fun deleteBlock(block: RoutineBlock) = blockDao.delete(block)
+    suspend fun saveTask(task: Task) = taskDao.upsert(task)
+    suspend fun deleteTask(task: Task) = taskDao.delete(task)
 
-    // --- Ejercicios ---
     suspend fun saveExercise(exercise: Exercise) = exerciseDao.upsert(exercise)
     suspend fun deleteExercise(exercise: Exercise) = exerciseDao.delete(exercise)
 
-    // --- Metas ---
-    suspend fun saveGoal(goal: Goal) = goalDao.upsert(goal)
-    suspend fun deleteGoal(goal: Goal) = goalDao.delete(goal)
-    suspend fun findGoalByTitle(title: String) = goalDao.findByTitle(title)
-
-    // --- Progreso ---
-    suspend fun saveProgress(entry: ProgressEntry) = progressDao.upsert(entry)
-    suspend fun deleteProgress(entry: ProgressEntry) = progressDao.delete(entry)
+    suspend fun saveMilestone(milestone: Milestone) = milestoneDao.upsert(milestone)
+    suspend fun deleteMilestone(milestone: Milestone) = milestoneDao.delete(milestone)
 
     /** Reemplaza todo el contenido con el resultado de una importación. */
     suspend fun replaceAll(data: ImportedData) {
-        blockDao.clear()
+        scheduleDao.clear()
+        taskDao.clear()
         exerciseDao.clear()
-        progressDao.clear()
-        goalDao.clear()
-
-        // Inserta metas primero y mapea título -> id para vincular ejercicios/progreso.
-        val goalIdByTitle = HashMap<String, Long>()
-        for (goal in data.goals) {
-            val id = goalDao.upsert(goal.copy(id = 0))
-            goalIdByTitle[goal.title.trim().lowercase()] = id
-        }
-        for (block in data.blocks) blockDao.upsert(block.copy(id = 0))
-        for (ex in data.exercises) {
-            val linkedId = ex.goalTitleRef?.let { goalIdByTitle[it.trim().lowercase()] }
-            exerciseDao.upsert(ex.exercise.copy(id = 0, goalId = linkedId))
-        }
-        for (p in data.progress) {
-            val goalId = goalIdByTitle[p.goalTitleRef.trim().lowercase()]
-            if (goalId != null) progressDao.upsert(p.entry.copy(id = 0, goalId = goalId))
-        }
+        milestoneDao.clear()
+        data.schedule.forEach { scheduleDao.upsert(it.copy(id = 0)) }
+        data.tasks.forEach { taskDao.upsert(it.copy(id = 0)) }
+        data.exercises.forEach { exerciseDao.upsert(it.copy(id = 0)) }
+        data.milestones.forEach { milestoneDao.upsert(it.copy(id = 0)) }
     }
 }
