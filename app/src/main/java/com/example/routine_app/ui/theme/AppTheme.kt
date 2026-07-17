@@ -11,12 +11,21 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 
-/** Los cuatro temas seleccionables (paleta + tipografía). */
+/** Los temas seleccionables (paleta + tipografía). */
 enum class ThemeId(val displayName: String, val fontLabel: String) {
     DARK("Dark", "Verde / óxido"),
-    MATRIX("Matrix", "Mono"),
-    STEALTH("Stealth", "Neutro"),
-    CUTE("Cute", "Rosa");
+    MATRIX("Matrix", "Mono terminal"),
+    STEALTH("Stealth", "Grises fríos"),
+    CUTE("Cute", "Rosa suave"),
+    PAPER("Paper", "Serif · crema y tinta"),
+    NEON("Neon Arcade", "Morado y cian"),
+    SEPIA("Sepia", "Bajo estímulo"),
+    BLUEPRINT("Blueprint", "Mono técnico"),
+    OCEAN("Midnight Ocean", "Azul marino y teal"),
+    EMBER("Ember", "Carbón y ámbar"),
+    NOIR("Noir", "Blanco y negro puro"),
+    DRACULA("Dracula", "Púrpura, rosa y verde"),
+    BLOODMOON("Bloodmoon", "Carmesí y oro");
 
     companion object {
         fun from(name: String?): ThemeId =
@@ -111,15 +120,178 @@ private val CuteColors = AppColors(
     swatches = listOf(Color(0xFFFFD6E8), Color(0xFFFF8FB3), Color(0xFFFFF2F7)),
 )
 
+private val PaperColors = AppColors(
+    isDark = false,
+    bg = Color(0xFFF3EDE0),
+    surface = Color(0xFFFAF6EC),
+    surfaceAlt = Color(0xFFE8DFCC),
+    onBg = Color(0xFF2B2620),
+    muted = Color(0xFF8A7F68),
+    line = Color(0xFFE0D5BD),
+    accent = Color(0xFFA33B2E),
+    accentSoft = Color(0x22A33B2E),
+    onAccent = Color(0xFFFAF6EC),
+    meta = Color(0xFF6B5A42),
+    done = Color(0xFF5E7A4E),
+    pillBg = Color(0xFFE8DFCC),
+    swatches = listOf(Color(0xFFF3EDE0), Color(0xFFA33B2E), Color(0xFF6B5A42)),
+)
+
+private val NeonColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF1A0B2E),
+    surface = Color(0xFF241141),
+    surfaceAlt = Color(0xFF2A1650),
+    onBg = Color(0xFFF0E6FF),
+    muted = Color(0xFF8A6BB0),
+    line = Color(0xFF3A2060),
+    accent = Color(0xFF00E5FF),
+    accentSoft = Color(0x2200E5FF),
+    onAccent = Color(0xFF1A0B2E),
+    meta = Color(0xFFFF2FD0),
+    done = Color(0xFF00E5FF),
+    pillBg = Color(0xFF140823),
+    swatches = listOf(Color(0xFF1A0B2E), Color(0xFF00E5FF), Color(0xFFFF2FD0)),
+)
+
+private val SepiaColors = AppColors(
+    isDark = false,
+    bg = Color(0xFFEFE9DF),
+    surface = Color(0xFFF7F4EE),
+    surfaceAlt = Color(0xFFE3DDD0),
+    onBg = Color(0xFF4A4238),
+    muted = Color(0xFFA39A8C),
+    line = Color(0xFFDDD5C5),
+    accent = Color(0xFF7A8768),
+    accentSoft = Color(0x227A8768),
+    onAccent = Color(0xFFEFE9DF),
+    meta = Color(0xFF9A7B5A),
+    done = Color(0xFF7A8768),
+    pillBg = Color(0xFFE3DDD0),
+    swatches = listOf(Color(0xFFEFE9DF), Color(0xFF7A8768), Color(0xFFA39A8C)),
+)
+
+private val BlueprintColors = AppColors(
+    isDark = false,
+    bg = Color(0xFFFFFFFF),
+    surface = Color(0xFFFFFFFF),
+    surfaceAlt = Color(0xFFF4F8FC),
+    onBg = Color(0xFF0F2A4A),
+    muted = Color(0xFF6D90B8),
+    line = Color(0xFFCFE0F0),
+    accent = Color(0xFF1565C0),
+    accentSoft = Color(0x221565C0),
+    onAccent = Color(0xFFFFFFFF),
+    meta = Color(0xFF1565C0),
+    done = Color(0xFF2E7D32),
+    pillBg = Color(0xFFF4F8FC),
+    swatches = listOf(Color(0xFFFFFFFF), Color(0xFF1565C0), Color(0xFFCFE0F0)),
+)
+
+private val OceanColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF071A2B),
+    surface = Color(0xFF0F2740),
+    surfaceAlt = Color(0xFF123049),
+    onBg = Color(0xFFE6F3F7),
+    muted = Color(0xFF5A8AA0),
+    line = Color(0xFF1E3A52),
+    accent = Color(0xFF2DD4BF),
+    accentSoft = Color(0x222DD4BF),
+    onAccent = Color(0xFF071A2B),
+    meta = Color(0xFF5AB0C9),
+    done = Color(0xFF2DD4BF),
+    pillBg = Color(0xFF0A2138),
+    swatches = listOf(Color(0xFF071A2B), Color(0xFF2DD4BF), Color(0xFF1E3A52)),
+)
+
+private val EmberColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF1A1614),
+    surface = Color(0xFF241E1A),
+    surfaceAlt = Color(0xFF2E2621),
+    onBg = Color(0xFFF0E6DC),
+    muted = Color(0xFF7A6E64),
+    line = Color(0xFF3A322C),
+    accent = Color(0xFFFF8A3D),
+    accentSoft = Color(0x22FF8A3D),
+    onAccent = Color(0xFF1A1614),
+    meta = Color(0xFFE0A050),
+    done = Color(0xFFFF8A3D),
+    pillBg = Color(0xFF161210),
+    swatches = listOf(Color(0xFF1A1614), Color(0xFFFF8A3D), Color(0xFF3A322C)),
+)
+
+private val NoirColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF0A0A0A),
+    surface = Color(0xFF141414),
+    surfaceAlt = Color(0xFF1E1E1E),
+    onBg = Color(0xFFE8E8E8),
+    muted = Color(0xFF6B6B6B),
+    line = Color(0xFF2A2A2A),
+    accent = Color(0xFFFFFFFF),
+    accentSoft = Color(0x22FFFFFF),
+    onAccent = Color(0xFF0A0A0A),
+    meta = Color(0xFFBFBFBF),
+    done = Color(0xFFFFFFFF),
+    pillBg = Color(0xFF000000),
+    swatches = listOf(Color(0xFF0A0A0A), Color(0xFFFFFFFF), Color(0xFF6B6B6B)),
+)
+
+private val DraculaColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF282A36),
+    surface = Color(0xFF343746),
+    surfaceAlt = Color(0xFF3C4051),
+    onBg = Color(0xFFF8F8F2),
+    muted = Color(0xFF6272A4),
+    line = Color(0xFF44475A),
+    accent = Color(0xFFBD93F9),
+    accentSoft = Color(0x22BD93F9),
+    onAccent = Color(0xFF1A1B24),
+    meta = Color(0xFFFF79C6),
+    done = Color(0xFF50FA7B),
+    pillBg = Color(0xFF1E1F29),
+    swatches = listOf(Color(0xFF282A36), Color(0xFFBD93F9), Color(0xFFFF79C6)),
+)
+
+private val BloodmoonColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF140A0D),
+    surface = Color(0xFF201016),
+    surfaceAlt = Color(0xFF2B1620),
+    onBg = Color(0xFFF3E3E7),
+    muted = Color(0xFF9E6B78),
+    line = Color(0xFF38202A),
+    accent = Color(0xFFE23E57),
+    accentSoft = Color(0x22E23E57),
+    onAccent = Color(0xFF140A0D),
+    meta = Color(0xFFE8B04B),
+    done = Color(0xFFE23E57),
+    pillBg = Color(0xFF0C0508),
+    swatches = listOf(Color(0xFF140A0D), Color(0xFFE23E57), Color(0xFFE8B04B)),
+)
+
 fun colorsFor(id: ThemeId): AppColors = when (id) {
     ThemeId.DARK -> DarkColors
     ThemeId.MATRIX -> MatrixColors
     ThemeId.STEALTH -> StealthColors
     ThemeId.CUTE -> CuteColors
+    ThemeId.PAPER -> PaperColors
+    ThemeId.NEON -> NeonColors
+    ThemeId.SEPIA -> SepiaColors
+    ThemeId.BLUEPRINT -> BlueprintColors
+    ThemeId.OCEAN -> OceanColors
+    ThemeId.EMBER -> EmberColors
+    ThemeId.NOIR -> NoirColors
+    ThemeId.DRACULA -> DraculaColors
+    ThemeId.BLOODMOON -> BloodmoonColors
 }
 
 fun fontFor(id: ThemeId): FontFamily = when (id) {
-    ThemeId.MATRIX -> FontFamily.Monospace
+    ThemeId.MATRIX, ThemeId.BLUEPRINT -> FontFamily.Monospace
+    ThemeId.PAPER -> FontFamily.Serif
     else -> FontFamily.SansSerif
 }
 
