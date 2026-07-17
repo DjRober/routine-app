@@ -25,7 +25,11 @@ enum class ThemeId(val displayName: String, val fontLabel: String) {
     EMBER("Ember", "Carbón y ámbar"),
     NOIR("Noir", "Blanco y negro puro"),
     DRACULA("Dracula", "Púrpura, rosa y verde"),
-    BLOODMOON("Bloodmoon", "Carmesí y oro");
+    BLOODMOON("Bloodmoon", "Carmesí y oro"),
+    COBALT("Cobalt", "Azul eléctrico"),
+    OBSIDIAN("Obsidian", "Negro y oro"),
+    FUCHSIA("Fuchsia", "Fucsia y violeta"),
+    VIRIDIAN("Viridian", "Esmeralda y lima");
 
     companion object {
         fun from(name: String?): ThemeId =
@@ -273,6 +277,74 @@ private val BloodmoonColors = AppColors(
     swatches = listOf(Color(0xFF140A0D), Color(0xFFE23E57), Color(0xFFE8B04B)),
 )
 
+private val CobaltColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF060B16),
+    surface = Color(0xFF0E1626),
+    surfaceAlt = Color(0xFF152036),
+    onBg = Color(0xFFE6EEFB),
+    muted = Color(0xFF5A6E8C),
+    line = Color(0xFF1E2C44),
+    accent = Color(0xFF3B82F6),
+    accentSoft = Color(0x223B82F6),
+    onAccent = Color(0xFF060B16),
+    meta = Color(0xFF60A5FA),
+    done = Color(0xFF3B82F6),
+    pillBg = Color(0xFF030711),
+    swatches = listOf(Color(0xFF060B16), Color(0xFF3B82F6), Color(0xFF60A5FA)),
+)
+
+private val ObsidianColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF0B0B0D),
+    surface = Color(0xFF151517),
+    surfaceAlt = Color(0xFF1D1D20),
+    onBg = Color(0xFFEDE9E0),
+    muted = Color(0xFF7C766A),
+    line = Color(0xFF2A2A2E),
+    accent = Color(0xFFE8B923),
+    accentSoft = Color(0x22E8B923),
+    onAccent = Color(0xFF0B0B0D),
+    meta = Color(0xFFC7873A),
+    done = Color(0xFFE8B923),
+    pillBg = Color(0xFF050506),
+    swatches = listOf(Color(0xFF0B0B0D), Color(0xFFE8B923), Color(0xFFC7873A)),
+)
+
+private val FuchsiaColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF160718),
+    surface = Color(0xFF221029),
+    surfaceAlt = Color(0xFF2D1636),
+    onBg = Color(0xFFF6E4F5),
+    muted = Color(0xFFA06BA8),
+    line = Color(0xFF3A1E42),
+    accent = Color(0xFFEC4899),
+    accentSoft = Color(0x22EC4899),
+    onAccent = Color(0xFF160718),
+    meta = Color(0xFFA855F7),
+    done = Color(0xFFEC4899),
+    pillBg = Color(0xFF0E040F),
+    swatches = listOf(Color(0xFF160718), Color(0xFFEC4899), Color(0xFFA855F7)),
+)
+
+private val ViridianColors = AppColors(
+    isDark = true,
+    bg = Color(0xFF06120E),
+    surface = Color(0xFF0E1F18),
+    surfaceAlt = Color(0xFF152B21),
+    onBg = Color(0xFFE2F5EC),
+    muted = Color(0xFF5C8A75),
+    line = Color(0xFF1D3A2E),
+    accent = Color(0xFF10B981),
+    accentSoft = Color(0x2210B981),
+    onAccent = Color(0xFF06120E),
+    meta = Color(0xFFA3E635),
+    done = Color(0xFF10B981),
+    pillBg = Color(0xFF030B08),
+    swatches = listOf(Color(0xFF06120E), Color(0xFF10B981), Color(0xFFA3E635)),
+)
+
 fun colorsFor(id: ThemeId): AppColors = when (id) {
     ThemeId.DARK -> DarkColors
     ThemeId.MATRIX -> MatrixColors
@@ -287,6 +359,10 @@ fun colorsFor(id: ThemeId): AppColors = when (id) {
     ThemeId.NOIR -> NoirColors
     ThemeId.DRACULA -> DraculaColors
     ThemeId.BLOODMOON -> BloodmoonColors
+    ThemeId.COBALT -> CobaltColors
+    ThemeId.OBSIDIAN -> ObsidianColors
+    ThemeId.FUCHSIA -> FuchsiaColors
+    ThemeId.VIRIDIAN -> ViridianColors
 }
 
 fun fontFor(id: ThemeId): FontFamily = when (id) {
